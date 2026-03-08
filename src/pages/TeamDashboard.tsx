@@ -4,13 +4,14 @@ import { useTeams, usePlayers, useAuctionState, useBidsForPlayer, useRealtimeSub
 import { PlayerCard } from "@/components/PlayerCard";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuthContext";
 import { toast } from "sonner";
-import { ArrowLeft, Gavel, Users, Shield, Wifi, Loader2 } from "lucide-react";
+import { ArrowLeft, Gavel, Users, Shield, Wifi, Loader2, LogOut } from "lucide-react";
 
 export default function TeamDashboard() {
   const [roleFilter, setRoleFilter] = useState("all");
-  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { teamId, setTeamId } = useAuth();
 
   const { data: teams, isLoading } = useTeams();
   const { data: players } = usePlayers();
