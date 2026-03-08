@@ -74,14 +74,9 @@ export default function TeamDashboard() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          {/* Team selector */}
-          <select
-            className="h-8 rounded-lg bg-muted border border-border px-2 text-xs"
-            value={team.id}
-            onChange={e => setSelectedTeamId(e.target.value)}
-          >
-            {teams?.map(t => <option key={t.id} value={t.id}>{t.short_name}</option>)}
-          </select>
+          <Button variant="ghost" size="sm" onClick={() => { setTeamId(null); navigate("/team/login"); }}>
+            <LogOut className="w-4 h-4" /> Switch Team
+          </Button>
           <div className="text-right">
             <div className="text-xs text-muted-foreground">Budget</div>
             <div className="font-heading text-xl font-bold text-gold-gradient">{formatPrice(team.budget_remaining)}</div>
