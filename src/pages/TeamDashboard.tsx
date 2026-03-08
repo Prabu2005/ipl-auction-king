@@ -4,20 +4,21 @@ import { useTeams, usePlayers, useAuctionState, useBidsForPlayer, useRealtimeSub
 import { PlayerCard } from "@/components/PlayerCard";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuthContext";
 import { toast } from "sonner";
-import { ArrowLeft, Gavel, Users, Shield, Wifi, Loader2 } from "lucide-react";
+import { ArrowLeft, Gavel, Users, Shield, Wifi, Loader2, LogOut } from "lucide-react";
 
 export default function TeamDashboard() {
   const [roleFilter, setRoleFilter] = useState("all");
-  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { teamId, setTeamId } = useAuth();
 
   const { data: teams, isLoading } = useTeams();
   const { data: players } = usePlayers();
   const { data: auctionState } = useAuctionState();
   useRealtimeSubscriptions();
 
-  const team = teams?.find(t => t.id === selectedTeamId) || teams?.[0];
+  const team = teams?.find(t => t.id === teamId) || teams?.[0];
   const activePlayer = players?.find(p => p.id === auctionState?.current_player_id);
   const { data: bids } = useBidsForPlayer(activePlayer?.id || null);
   const placeBid = usePlaceBid();
@@ -73,14 +74,9 @@ export default function TeamDashboard() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          {/* Team selector */}
-          <select
-            className="h-8 rounded-lg bg-muted border border-border px-2 text-xs"
-            value={team.id}
-            onChange={e => setSelectedTeamId(e.target.value)}
-          >
-            {teams?.map(t => <option key={t.id} value={t.id}>{t.short_name}</option>)}
-          </select>
+          <Button variant="ghost" size="sm" onClick={() => { setTeamId(null); navigate("/team/login"); }}>
+            <LogOut className="w-4 h-4" /> Switch Team
+          </Button>
           <div className="text-right">
             <div className="text-xs text-muted-foreground">Budget</div>
             <div className="font-heading text-xl font-bold text-gold-gradient">{formatPrice(team.budget_remaining)}</div>

@@ -18,6 +18,7 @@ export type DbTeam = {
   rtm_count: number;
   max_squad_size: number;
   max_overseas: number;
+  password_hash: string | null;
 };
 
 export type DbPlayer = {
