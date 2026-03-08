@@ -18,7 +18,7 @@ export default function TeamDashboard() {
   const { data: auctionState } = useAuctionState();
   useRealtimeSubscriptions();
 
-  const team = teams?.find(t => t.id === selectedTeamId) || teams?.[0];
+  const team = teams?.find(t => t.id === teamId) || teams?.[0];
   const activePlayer = players?.find(p => p.id === auctionState?.current_player_id);
   const { data: bids } = useBidsForPlayer(activePlayer?.id || null);
   const placeBid = usePlaceBid();
