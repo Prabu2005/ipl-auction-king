@@ -14,16 +14,259 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      announcements: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+        }
+        Relationships: []
+      }
+      auction_state: {
+        Row: {
+          bid_increment: number
+          created_at: string
+          current_player_id: string | null
+          id: string
+          status: string
+          timer_duration: number
+          timer_end: string | null
+          updated_at: string
+        }
+        Insert: {
+          bid_increment?: number
+          created_at?: string
+          current_player_id?: string | null
+          id?: string
+          status?: string
+          timer_duration?: number
+          timer_end?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bid_increment?: number
+          created_at?: string
+          current_player_id?: string | null
+          id?: string
+          status?: string
+          timer_duration?: number
+          timer_end?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auction_state_current_player_id_fkey"
+            columns: ["current_player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bids: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          player_id: string
+          team_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          player_id: string
+          team_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          player_id?: string
+          team_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bids_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bids_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      players: {
+        Row: {
+          auction_order: number | null
+          auction_set: number | null
+          badge: string | null
+          base_price: number
+          country: string
+          created_at: string
+          id: string
+          ipl_team_history: string | null
+          name: string
+          photo_url: string | null
+          role: string
+          sold_price: number | null
+          sold_to_team_id: string | null
+          stats: Json
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          auction_order?: number | null
+          auction_set?: number | null
+          badge?: string | null
+          base_price?: number
+          country?: string
+          created_at?: string
+          id?: string
+          ipl_team_history?: string | null
+          name: string
+          photo_url?: string | null
+          role: string
+          sold_price?: number | null
+          sold_to_team_id?: string | null
+          stats?: Json
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          auction_order?: number | null
+          auction_set?: number | null
+          badge?: string | null
+          base_price?: number
+          country?: string
+          created_at?: string
+          id?: string
+          ipl_team_history?: string | null
+          name?: string
+          photo_url?: string | null
+          role?: string
+          sold_price?: number | null
+          sold_to_team_id?: string | null
+          stats?: Json
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "players_sold_to_team_id_fkey"
+            columns: ["sold_to_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          budget_remaining: number
+          budget_total: number
+          color: string | null
+          created_at: string
+          id: string
+          logo_emoji: string | null
+          logo_url: string | null
+          max_overseas: number
+          max_squad_size: number
+          name: string
+          owner_name: string
+          owner_user_id: string | null
+          password_hash: string | null
+          rtm_count: number
+          short_name: string
+          updated_at: string
+        }
+        Insert: {
+          budget_remaining?: number
+          budget_total?: number
+          color?: string | null
+          created_at?: string
+          id?: string
+          logo_emoji?: string | null
+          logo_url?: string | null
+          max_overseas?: number
+          max_squad_size?: number
+          name: string
+          owner_name: string
+          owner_user_id?: string | null
+          password_hash?: string | null
+          rtm_count?: number
+          short_name: string
+          updated_at?: string
+        }
+        Update: {
+          budget_remaining?: number
+          budget_total?: number
+          color?: string | null
+          created_at?: string
+          id?: string
+          logo_emoji?: string | null
+          logo_url?: string | null
+          max_overseas?: number
+          max_squad_size?: number
+          name?: string
+          owner_name?: string
+          owner_user_id?: string | null
+          password_hash?: string | null
+          rtm_count?: number
+          short_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "team_owner" | "spectator"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +393,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "team_owner", "spectator"],
+    },
   },
 } as const

@@ -1,18 +1,26 @@
 import { motion } from "framer-motion";
-import { mockTeams, mockPlayers, formatPrice } from "@/lib/mockData";
+import { useTeams, usePlayers, useRealtimeSubscriptions, formatPrice } from "@/hooks/useAuction";
 import { TeamCard } from "@/components/TeamCard";
 import { PlayerCard } from "@/components/PlayerCard";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Trophy, Download, Share2 } from "lucide-react";
-
-const soldPlayers = mockPlayers.filter(p => p.status === "sold");
-const unsoldPlayers = mockPlayers.filter(p => p.status === "unsold");
-const totalSpent = soldPlayers.reduce((sum, p) => sum + (p.soldPrice || 0), 0);
-const mostExpensive = soldPlayers.sort((a, b) => (b.soldPrice || 0) - (a.soldPrice || 0))[0];
+import { ArrowLeft, Trophy, Download, Share2, Loader2 } from "lucide-react";
 
 export default function Results() {
   const navigate = useNavigate();
+  const { data: players, isLoading } = usePlayers();
+  const { data: teams } = useTeams();
+  useRealtimeSubscriptions();
+
+  const soldPlayers = (players || []).filter(p => p.status === "sold");
+  const unsoldPlayers = (players || []).filter(p => p.status === "unsold");
+  const totalSpent = soldPlayers.reduce((sum, p) => sum + (p.sold_price || 0), 0);
+  const mostExpensive = [...soldPlayers].sort((a, b) => (b.sold_price || 0) - (a.sold_price || 0))[0];
+  const cheapest = [...soldPlayers].sort((a, b) => (a.sold_price || 0) - (b.sold_price || 0))[0];
+
+  if (isLoading) {
+    return <div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -31,17 +39,12 @@ export default function Results() {
       </header>
 
       <div className="p-6 max-w-6xl mx-auto space-y-8">
-        {/* Summary Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: "Total Spent", value: formatPrice(totalSpent), icon: "💰" },
             { label: "Players Sold", value: String(soldPlayers.length), icon: "✅" },
-            { label: "Players Unsold", value: String(unsoldPlayers.length), icon: "❌" },
-            { label: "Most Expensive", value: mostExpensive?.name || "—", sub: mostExpensive ? formatPrice(mostExpensive.soldPrice || 0) : "", icon: "🌟" },
+            { label: "Most Expensive", value: mostExpensive?.name || "—", sub: mostExpensive ? formatPrice(mostExpensive.sold_price || 0) : "", icon: "🌟" },
+            { label: "Cheapest Buy", value: cheapest?.name || "—", sub: cheapest ? formatPrice(cheapest.sold_price || 0) : "", icon: "🏷️" },
           ].map((s, i) => (
             <div key={i} className="glass-card p-5">
               <div className="text-2xl mb-2">{s.icon}</div>
@@ -52,30 +55,22 @@ export default function Results() {
           ))}
         </motion.div>
 
-        {/* Teams */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
           <h2 className="font-heading text-2xl font-bold mb-4">Team Results</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {mockTeams.map((team, i) => (
-              <div key={team.id} className="relative">
-                {i === 0 && (
-                  <div className="absolute -top-2 -right-2 z-10 w-8 h-8 rounded-full gold-gradient flex items-center justify-center text-sm font-bold text-primary-foreground">🏆</div>
-                )}
-                <TeamCard team={team} />
-              </div>
-            ))}
+            {teams?.map(team => <TeamCard key={team.id} team={team} />)}
           </div>
         </motion.div>
 
-        {/* Sold Players */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-          <h2 className="font-heading text-2xl font-bold mb-4">Sold Players</h2>
-          <div className="grid gap-3">
-            {soldPlayers.map(p => <PlayerCard key={p.id} player={p} />)}
-          </div>
-        </motion.div>
+        {soldPlayers.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+            <h2 className="font-heading text-2xl font-bold mb-4">Sold Players</h2>
+            <div className="grid gap-3">
+              {soldPlayers.map(p => <PlayerCard key={p.id} player={p} />)}
+            </div>
+          </motion.div>
+        )}
 
-        {/* Unsold */}
         {unsoldPlayers.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
             <h2 className="font-heading text-2xl font-bold mb-4">Unsold Players</h2>
