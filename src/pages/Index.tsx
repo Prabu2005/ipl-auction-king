@@ -57,10 +57,10 @@ const Index = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button variant="gold" size="xl" onClick={() => navigate("/admin")}>
+            <Button variant="gold" size="xl" onClick={() => navigate("/admin/login")}>
               <Shield className="w-5 h-5" /> Admin Panel
             </Button>
-            <Button variant="electric" size="xl" onClick={() => navigate("/team")}>
+            <Button variant="electric" size="xl" onClick={() => navigate("/team/login")}>
               <Users className="w-5 h-5" /> Team Login
             </Button>
             <Button variant="glass" size="xl" onClick={() => navigate("/auction")}>
