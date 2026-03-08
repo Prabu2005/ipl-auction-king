@@ -4,7 +4,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
-  base: "/ipl-auction-king/",   // IMPORTANT for GitHub Pages
+  base: "/",
 
   server: {
     host: "::",
